@@ -1,103 +1,125 @@
-import Image from "next/image";
+"use client";
+
+import Catalog from "@/components/Catalog";
+import CatalogFilter from "@/components/CatalogFilter";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [filtroCategoria, setFiltroCategoria] = useState("Todos");
+  const [precoMin, setPrecoMin] = useState("");
+  const [precoMax, setPrecoMax] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const extrairPreco = (str: string) => {
+    const num = parseFloat(str.replace("R$", "").replace(",", "."));
+    return isNaN(num) ? 0 : num;
+  };
+
+  const produtos = [
+    {
+      nome: "Banana Prata",
+      descricao: "Fruta tropical rica em potássio.",
+      preco: "R$ 4,50 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Fruta",
+    },
+    {
+      nome: "Tomate Italiano",
+      descricao: "Ideal para molhos e saladas.",
+      preco: "R$ 6,20 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Fruta",
+    },
+    {
+      nome: "Alface Crespa",
+      descricao: "Hortaliça fresca e crocante.",
+      preco: "R$ 2,00 / unidade",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Legume",
+    },
+    {
+      nome: "Milho Verde",
+      descricao: "Produto da safra atual.",
+      preco: "R$ 1,30 / espiga",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Legume",
+    },
+    {
+      nome: "Mamão Formosa",
+      descricao: "Doce e suculento, ideal para café da manhã.",
+      preco: "R$ 3,80 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Fruta",
+    },
+    {
+      nome: "Batata Doce",
+      descricao: "Fonte de energia e fibras.",
+      preco: "R$ 3,20 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Legume",
+    },
+    {
+      nome: "Cenoura",
+      descricao: "Rica em vitamina A, ótima para saladas.",
+      preco: "R$ 2,90 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Legume",
+    },
+    {
+      nome: "Laranja Pera",
+      descricao: "Excelente para sucos naturais.",
+      preco: "R$ 2,70 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Fruta",
+    },
+    {
+      nome: "Abacate",
+      descricao: "Fruta versátil e nutritiva.",
+      preco: "R$ 5,50 / kg",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Fruta",
+    },
+    {
+      nome: "Repolho Roxo",
+      descricao: "Rico em antioxidantes, ideal para saladas.",
+      preco: "R$ 3,10 / unidade",
+      imagem: "https://placehold.co/600x400",
+      categoria: "Legume",
+    },
+  ];
+
+  const produtosFiltrados = produtos.filter((produto) => {
+    const categoriaMatch =
+      filtroCategoria === "Todos" || produto.categoria === filtroCategoria;
+
+    const preco = extrairPreco(produto.preco);
+    const precoMinMatch = !precoMin || preco >= parseFloat(precoMin);
+    const precoMaxMatch = !precoMax || preco <= parseFloat(precoMax);
+
+    return categoriaMatch && precoMinMatch && precoMaxMatch;
+  });
+
+  return (
+    <div className="w-full min-h-screen bg-gray-50 py-10">
+      <div className="max-w-6xl mx-auto px-4">
+        <h1 className="text-3xl font-bold mb-10 text-center text-gray-800">
+          Catálogo de Produtos
+        </h1>
+
+        <CatalogFilter
+          filtroCategoria={filtroCategoria}
+          setFiltroCategoria={setFiltroCategoria}
+          precoMin={precoMin}
+          setPrecoMin={setPrecoMin}
+          precoMax={precoMax}
+          setPrecoMax={setPrecoMax}
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {produtosFiltrados.map((item, index) => (
+            <Catalog key={index} produto={item} />
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
